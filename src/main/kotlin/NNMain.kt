@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
             arrayOf(2f, 4f),
             arrayOf(3f, 2f) ))
 
-    val product = matrix.dotProduct(matrix2)
+    val product = dotProduct(matrix, matrix2)
     product.printValues()
 
 }

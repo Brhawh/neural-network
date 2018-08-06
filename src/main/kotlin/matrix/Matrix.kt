@@ -1,4 +1,4 @@
-class Matrix(private val numOfRows: Int, private val numOfCols: Int, private val rowsOfValues: Array<Array<Float>>) {
+class Matrix(val numOfRows: Int, val numOfCols: Int, val rowsOfValues: Array<Array<Float>>) {
 
     init {
         if (rowsOfValues.size != numOfRows) {
@@ -11,45 +11,43 @@ class Matrix(private val numOfRows: Int, private val numOfCols: Int, private val
         }
     }
 
-    fun dotProduct(multiple: Matrix): Matrix {
-        if (numOfCols != multiple.numOfRows) {
-            throw ArithmeticException("The number of cols in $this does not equal the number of rows in $multiple, therefor the dot product can't be calculated.")
-        }
-
-        val results: MutableList<Array<Float>> = mutableListOf()
-        for (rowNum in 0 until numOfRows) {
-            val rowToAdd = mutableListOf<Float>()
-            for (colNum in 0 until multiple.numOfCols) {
-                rowToAdd.add(colNum, dotProductAtIndex(rowNum, colNum, multiple))
-            }
-            results.add(rowNum, rowToAdd.toTypedArray())
-        }
-
-        return Matrix(numOfRows, multiple.numOfCols, results.toTypedArray())
-    }
-
-    private fun dotProductAtIndex(row: Int, col: Int, multiple: Matrix): Float {
-        val rowFromMatrix = rowsOfValues[row]
-        val colFromMultiple = FloatArray(multiple.numOfRows) {0f}
-        for (values in 0 until multiple.numOfRows) {
-            colFromMultiple[values] = multiple.rowsOfValues[values][col]
-        }
-
-        var result = 0f
-
-        for (value in 0 until rowFromMatrix.size) {
-            result += rowFromMatrix[value] * colFromMultiple[value]
-        }
-
-        return result
-    }
-
     fun printValues() {
         rowsOfValues.forEach {
             it.forEach { print("$it  ") }
             println()
         }
     }
+}
 
+fun dotProduct(first: Matrix, second: Matrix ): Matrix {
+    if (first.numOfCols != second.numOfRows) {
+        throw ArithmeticException("The number of cols in $first does not equal the number of rows in $second, therefor the dot product can't be calculated.")
+    }
 
+    val results: MutableList<Array<Float>> = mutableListOf()
+    for (rowNum in 0 until first.numOfRows) {
+        val rowToAdd = mutableListOf<Float>()
+        for (colNum in 0 until second.numOfCols) {
+            rowToAdd.add(colNum, dotProductAtIndex(rowNum, colNum, first, second))
+        }
+        results.add(rowNum, rowToAdd.toTypedArray())
+    }
+
+    return Matrix(first.numOfRows, second.numOfCols, results.toTypedArray())
+}
+
+private fun dotProductAtIndex(row: Int, col: Int, first: Matrix, second: Matrix): Float {
+    val rowFromMatrix = first.rowsOfValues[row]
+    val colFromMultiple = FloatArray(second.numOfRows) {0f}
+    for (values in 0 until second.numOfRows) {
+        colFromMultiple[values] = second.rowsOfValues[values][col]
+    }
+
+    var result = 0f
+
+    for (value in 0 until rowFromMatrix.size) {
+        result += rowFromMatrix[value] * colFromMultiple[value]
+    }
+
+    return result
 }

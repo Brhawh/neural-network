@@ -1,4 +1,4 @@
-class Matrix(private val numOfRows: Int, private val numOfCols: Int, rowsOfValues: Array<Array<Float>>) {
+class Matrix(private val numOfRows: Int, private val numOfCols: Int, private val rowsOfValues: Array<Array<Float>>) {
 
     init {
         if (rowsOfValues.size != numOfRows) {
@@ -11,13 +11,43 @@ class Matrix(private val numOfRows: Int, private val numOfCols: Int, rowsOfValue
         }
     }
 
-    fun dotProduct(multiple: Matrix) {
-        if (numOfRows != multiple.numOfCols) {
-            throw ArithmeticException("The number of rows in $this does not equal the number of columns in $multiple, therefor the dot product can't be calculated.")
+    fun dotProduct(multiple: Matrix): Matrix {
+        if (numOfCols != multiple.numOfRows) {
+            throw ArithmeticException("The number of cols in $this does not equal the number of rows in $multiple, therefor the dot product can't be calculated.")
         }
 
-        for (rowNum in 0..numOfRows) {
-            
+        val results: MutableList<Array<Float>> = mutableListOf()
+        for (rowNum in 0 until numOfRows) {
+            val rowToAdd = mutableListOf<Float>()
+            for (colNum in 0 until multiple.numOfCols) {
+                rowToAdd.add(colNum, dotProductAtIndex(rowNum, colNum, multiple))
+            }
+            results.add(rowNum, rowToAdd.toTypedArray())
+        }
+
+        return Matrix(numOfRows, multiple.numOfCols, results.toTypedArray())
+    }
+
+    private fun dotProductAtIndex(row: Int, col: Int, multiple: Matrix): Float {
+        val rowFromMatrix = rowsOfValues[row]
+        val colFromMultiple = FloatArray(multiple.numOfRows) {0f}
+        for (values in 0 until multiple.numOfRows) {
+            colFromMultiple[values] = multiple.rowsOfValues[values][col]
+        }
+
+        var result = 0f
+
+        for (value in 0 until rowFromMatrix.size) {
+            result += rowFromMatrix[value] * colFromMultiple[value]
+        }
+
+        return result
+    }
+
+    fun printValues() {
+        rowsOfValues.forEach {
+            it.forEach { print("$it  ") }
+            println()
         }
     }
 
